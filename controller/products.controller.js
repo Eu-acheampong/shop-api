@@ -11,6 +11,7 @@ const createProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   try {
+    console.log(req.user);
     const products = await Product.find({});
     res.status(200).json(products);
   } catch (error) {
@@ -20,8 +21,9 @@ const getAllProducts = async (req, res) => {
 
 const getSingleProduct = async (req, res) => {
   try {
-    const productId = req.params.productId;
-    const product = await Product.findById(productId);
+    const { productId } = req.params;
+    const product = findproduct(productId);
+    res;
     if (!product) {
       return res.status(404).json({ msg: "Product not found" });
     }
@@ -67,4 +69,4 @@ module.exports = {
   deleteProduct,
   updateProduct,
   getSingleProduct,
-}
+};

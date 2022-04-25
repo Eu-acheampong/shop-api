@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 const { loginSchema, registerSchema } = require("../utils/validation");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
   const { value, error } = registerSchema.validate(req.body);
@@ -26,11 +27,13 @@ const register = async (req, res) => {
 
   res.status(201).json(user);
   // res.send("Register Successfully");
+
 };
 
 const login = async (req, res) => {
   // validate user input
   const { value, error } = loginSchema.validate(req.body);
+
   if (error) {
     return res.status(400).json(error);
   }
@@ -49,12 +52,24 @@ const login = async (req, res) => {
   if (!isMatch) {
     return res.status(400).json({ msg: "Invalid credentials" });
   }
-
-  res.status(200).json(user);
+  // generate token
+  const token = jwt.sign(
+    {
+      // payload or object
+      id: user._id,
+      username: user.username,
+      // secret key used to encode the payload
+    },
+    "secret",
+    // options
+    {
+      expiresIn: "1hr",
+    }
+  );
+  res.status(200).json(token);
 };
 
 module.exports = {
   register,
   login,
 };
-
